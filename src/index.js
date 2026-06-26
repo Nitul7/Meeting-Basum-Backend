@@ -10,6 +10,8 @@ dotenv.config();
 
 const app = express();
 
+console.info("Starting server");
+
 app.use(cors({
   origin: "*",
   credentials: true
@@ -17,16 +19,18 @@ app.use(cors({
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  
+
   res.json({
     message: 'Hello From Server!'
   });
 });
 
+console.info("Routes defined");
 app.use('/users', authenticate, userRouter);
 app.use('/meetings', authenticate, meetingRouter);
 app.use('/auth', authController);
 
+console.info("Server started");
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
