@@ -5,6 +5,7 @@ import meetingRouter from './controllers/meeting.controller.js';
 import authenticate from './middlewares/auth.middleware.js';
 import authController from './controllers/auth.controller.js';
 import cors from 'cors';
+import { AccessToken } from 'livekit-server-sdk';
 
 dotenv.config();
 
@@ -24,6 +25,33 @@ app.get('/', (req, res) => {
     message: 'Hello From Server!'
   });
 });
+app.post('/livekit/token', async (req, res) => {
+
+    const { roomName, userName } = req.body;
+
+    const accessToken = new AccessToken(process.env.LIVEKIT_API_KEY, process.env.LIVEKIT_API_SECRET, {
+        identity: userName,
+        room: roomName,
+        ttl: 3600
+    });
+
+    console.log("accessToken: ", accessToken);
+
+
+    accessToken.addGrant({
+        roomJoin: true,
+        room: roomName,
+    });
+
+    const token = await accessToken.toJwt();
+
+    console.log("token: ", token);
+
+    res.json({
+        token
+    })
+});
+
 
 console.info("Routes defined");
 app.use('/users', authenticate, userRouter);
